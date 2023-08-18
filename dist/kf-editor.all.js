@@ -1,9 +1,9 @@
 /*!
  * ====================================================
- * Kityformula-Editor - v1.0.0 - 2014-04-14
+ * Kityformula-Editor - v1.0.0 - 2023-08-04
  * https://github.com/kitygraph/formula
  * GitHub: https://github.com/kitygraph/formula.git 
- * Copyright (c) 2014 Baidu Kity Group; Licensed MIT
+ * Copyright (c) 2023 Baidu Kity Group; Licensed MIT
  * ====================================================
  */
 
@@ -1526,9 +1526,9 @@ define("ui/control/zoom", [ "base/utils", "base/common", "base/event/event", "ki
 /*!
  * toolbar元素列表定义
  */
-define("ui/toolbar-ele-list", [ "ui/ui-impl/def/ele-type" ], function(require) {
-    var UI_ELE_TYPE = require("ui/ui-impl/def/ele-type");
-    return [ {
+define("ui/toolbar-ele-list", [ "ui/ui-impl/def/ele-type", "ui/ui-impl/def/box-type", "kity" ], function(require) {
+    var UI_ELE_TYPE = require("ui/ui-impl/def/ele-type"), BOX_TYPE = require("ui/ui-impl/def/box-type"), kity = require("kity");
+    var config = [ {
         type: UI_ELE_TYPE.DRAPDOWN_BOX,
         options: {
             button: {
@@ -1536,7 +1536,6 @@ define("ui/toolbar-ele-list", [ "ui/ui-impl/def/ele-type" ], function(require) {
                 icon: "assets/images/toolbar/button/pi.png"
             },
             box: {
-                //                width: 400,
                 group: [ {
                     title: "预设公式",
                     content: [ {
@@ -1558,6 +1557,106 @@ define("ui/toolbar-ele-list", [ "ui/ui-impl/def/ele-type" ], function(require) {
                             val: "a^2+b^2=c^2"
                         }
                     } ]
+                } ]
+            }
+        }
+    }, {
+        type: UI_ELE_TYPE.DELIMITER
+    }, {
+        type: UI_ELE_TYPE.AREA,
+        options: {
+            button: {
+                icon: "assets/images/toolbar/char/button.png"
+            },
+            box: {
+                width: 527,
+                type: BOX_TYPE.OVERLAP,
+                group: [ {
+                    title: "基础数学",
+                    content: [ {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/pm.png">',
+                            val: "\\pm"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/infty.png">',
+                            val: "\\infty"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/eq.png">',
+                            val: "="
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/sim.png">',
+                            val: "\\sim"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/times.png">',
+                            val: "\\times"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/div.png">',
+                            val: "\\div"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/tanhao.png">',
+                            val: "!"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/lt.png">',
+                            val: "<"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/ll.png">',
+                            val: "\\ll"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/gt.png">',
+                            val: ">"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/gg.png">',
+                            val: "\\gg"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/leq.png">',
+                            val: "\\leq"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/geq.png">',
+                            val: "\\geq"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/mp.png">',
+                            val: "\\mp"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/simeq.png">',
+                            val: "\\simeq"
+                        }
+                    }, {
+                        item: {
+                            show: '<img src="assets/images/toolbar/char/math/equiv.png">',
+                            val: "\\equiv"
+                        }
+                    } ]
+                }, {
+                    title: "希腊字母",
+                    content: []
                 } ]
             }
         }
@@ -1748,11 +1847,24 @@ define("ui/toolbar-ele-list", [ "ui/ui-impl/def/ele-type" ], function(require) {
             }
         }
     } ];
+    // 初始化希腊字符配置
+    (function() {
+        var greekList = [ "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega" ], greekConf = config[2].options.box.group[1].content;
+        kity.Utils.each(greekList, function(greekChar, index) {
+            greekConf.push({
+                item: {
+                    show: '<img src="assets/images/toolbar/char/greek/' + greekChar + '.png">',
+                    val: "\\" + greekChar
+                }
+            });
+        });
+    })();
+    return config;
 });
 /*!
  * 工具条组件
  */
-define("ui/toolbar/toolbar", [ "kity", "ui/ui-impl/ui", "ui/ui-impl/drapdown-box", "ui/ui-impl/delimiter", "ui/ui-impl/ui-utils", "jquery", "ui/ui-impl/def/ele-type" ], function(require) {
+define("ui/toolbar/toolbar", [ "kity", "ui/ui-impl/ui", "ui/ui-impl/drapdown-box", "ui/ui-impl/delimiter", "ui/ui-impl/area", "ui/ui-impl/ui-utils", "jquery", "ui/ui-impl/def/ele-type" ], function(require) {
     var kity = require("kity"), UiImpl = require("ui/ui-impl/ui"), $$ = require("ui/ui-impl/ui-utils"), UI_ELE_TYPE = require("ui/ui-impl/def/ele-type"), Tollbar = kity.createClass("Tollbar", {
         constructor: function(kfEditor, uiComponent, elementList) {
             this.kfEditor = kfEditor;
@@ -1816,6 +1928,9 @@ define("ui/toolbar/toolbar", [ "kity", "ui/ui-impl/ui", "ui/ui-impl/drapdown-box
 
           case UI_ELE_TYPE.DELIMITER:
             return createDelimiter(doc);
+
+          case UI_ELE_TYPE.AREA:
+            return createArea(doc, options);
         }
     }
     function createDrapdownBox(doc, options) {
@@ -1824,17 +1939,137 @@ define("ui/toolbar/toolbar", [ "kity", "ui/ui-impl/ui", "ui/ui-impl/drapdown-box
     function createDelimiter(doc) {
         return new UiImpl.Delimiter(doc);
     }
+    function createArea(doc, options) {
+        return new UiImpl.Area(doc, options);
+    }
     return Tollbar;
+});
+/*!
+ * 特殊字符区域
+ */
+define("ui/ui-impl/area", [ "kity", "ui/ui-impl/ui-utils", "jquery", "ui/ui-impl/box", "ui/ui-impl/def/box-type", "ui/ui-impl/def/item-type", "ui/ui-impl/button", "ui/ui-impl/list" ], function(require) {
+    var kity = require("kity"), PREFIX = "kf-editor-ui-", // UiUitls
+    $$ = require("ui/ui-impl/ui-utils"), Box = require("ui/ui-impl/box"), Area = kity.createClass("Area", {
+        constructor: function(doc, options) {
+            this.options = options;
+            this.doc = doc;
+            this.toolbar = null;
+            this.element = this.createArea();
+            this.container = this.createContainer();
+            this.button = this.createButton();
+            this.mountPoint = this.createMountPoint();
+            this.boxObject = this.createBox();
+            this.mergeElement();
+            this.mount();
+            this.setListener();
+            this.initEvent();
+            this.updateContent();
+        },
+        initEvent: function() {
+            var _self = this;
+            $$.on(this.button, "click", function() {
+                _self.showMount();
+            });
+            $$.delegate(this.container, ".kf-editor-ui-area-item", "mousedown", function(e) {
+                e.preventDefault();
+                if (e.which !== 1) {
+                    return;
+                }
+                $$.publish("data.select", this.getAttribute("data-value"));
+            });
+            this.boxObject.initEvent();
+        },
+        setListener: function() {
+            var _self = this;
+            this.boxObject.setSelectHandler(function(val) {
+                // 发布
+                $$.publish("data.select", val);
+                _self.hide();
+            });
+            // 内容面板切换
+            this.boxObject.setChangeHandler(function(index) {
+                _self.updateContent();
+            });
+        },
+        createArea: function() {
+            var areaNode = $$.ele(this.doc, "div", {
+                className: PREFIX + "area"
+            });
+            if ("width" in this.options) {
+                areaNode.style.width = this.options.width + "px";
+            }
+            return areaNode;
+        },
+        updateContent: function() {
+            var items = this.boxObject.getOverlapContent(), newContent = [];
+            // 清空原有内容
+            this.container.innerHTML = "";
+            kity.Utils.each(items, function(item, index) {
+                item = item.item;
+                newContent.push('<div class="' + PREFIX + 'area-item" data-value="' + item.val + '"><div class="' + PREFIX + 'area-item-content">' + item.show + "</div></div>");
+            });
+            this.container.innerHTML = newContent.join("");
+        },
+        // 挂载
+        mount: function() {
+            this.boxObject.mountTo(this.mountPoint);
+        },
+        showMount: function() {
+            this.mountPoint.style.display = "block";
+        },
+        hideMount: function() {
+            this.mountPoint.style.display = "none";
+        },
+        hide: function() {
+            this.hideMount();
+            this.boxObject.hide();
+        },
+        createButton: function() {
+            return $$.ele(this.doc, "div", {
+                className: PREFIX + "area-button",
+                content: "▼"
+            });
+        },
+        createMountPoint: function() {
+            return $$.ele(this.doc, "div", {
+                className: PREFIX + "area-mount"
+            });
+        },
+        createBox: function() {
+            return new Box(this.doc, this.options.box);
+        },
+        createContainer: function() {
+            var node = $$.ele(this.doc, "div", {
+                className: PREFIX + "area-container"
+            });
+            return node;
+        },
+        mergeElement: function() {
+            this.element.appendChild(this.container);
+            this.element.appendChild(this.button);
+            this.element.appendChild(this.mountPoint);
+        },
+        setToolbar: function(toolbar) {
+            this.toolbar = toolbar;
+        },
+        attachTo: function(container) {
+            container.appendChild(this.element);
+        }
+    });
+    return Area;
 });
 /**
  * Created by hn on 14-3-31.
  */
-define("ui/ui-impl/box", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], function(require) {
+define("ui/ui-impl/box", [ "kity", "ui/ui-impl/ui-utils", "jquery", "ui/ui-impl/def/box-type", "ui/ui-impl/def/item-type", "ui/ui-impl/button", "ui/ui-impl/list" ], function(require) {
     var kity = require("kity"), PREFIX = "kf-editor-ui-", // UiUitls
-    $$ = require("ui/ui-impl/ui-utils"), Box = kity.createClass("Box", {
+    $$ = require("ui/ui-impl/ui-utils"), BOX_TYPE = require("ui/ui-impl/def/box-type"), ITEM_TYPE = require("ui/ui-impl/def/item-type"), Button = require("ui/ui-impl/button"), List = require("ui/ui-impl/list"), Box = kity.createClass("Box", {
         constructor: function(doc, options) {
             this.options = options;
+            this.options.type = this.options.type || BOX_TYPE.DETACHED;
             this.doc = doc;
+            this.overlapButtonObject = null;
+            this.overlapIndex = -1;
             this.element = this.createBox();
             this.groupContainer = this.createGroupContainer();
             this.itemGroups = this.createItemGroup();
@@ -1869,13 +2104,76 @@ define("ui/ui-impl/box", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], function(r
         setSelectHandler: function(onselectHandler) {
             this.onselectHandler = onselectHandler;
         },
+        setChangeHandler: function(changeHandler) {
+            this.onchangeHandler = changeHandler;
+        },
+        onchangeHandler: function(index) {},
         createGroupContainer: function() {
             return $$.ele(this.doc, "div", {
                 className: PREFIX + "box-container"
             });
         },
         createItemGroup: function() {
-            var doc = this.doc, groups = [], groupNode = null, groupTitle = null, itemContainer = null;
+            var groups = this.createGroup();
+            switch (this.options.type) {
+              case BOX_TYPE.DETACHED:
+                return groups;
+
+              case BOX_TYPE.OVERLAP:
+                return this.createOverlapGroup(groups);
+            }
+            return null;
+        },
+        hide: function() {
+            this.overlapButtonObject && this.overlapButtonObject.hideMount();
+        },
+        getOverlapContent: function() {
+            // 只有重叠式才可以获取重叠内容
+            if (this.options.type !== BOX_TYPE.OVERLAP) {
+                return null;
+            }
+            return this.options.group[this.overlapIndex].content;
+        },
+        createOverlapGroup: function(groups) {
+            var list = this.getGroupList(), _self = this, overlapContainer = createOverlapContainer(this.doc), overlapButtonObject = createOverlapButton(this.doc), overlapListObject = createOverlapList(this.doc, list);
+            this.overlapButtonObject = overlapButtonObject;
+            // 组合选择组件
+            overlapButtonObject.mount(overlapListObject);
+            overlapButtonObject.initEvent();
+            overlapListObject.initEvent();
+            // 切换面板
+            overlapListObject.setSelectHandler(function(index, oldIndex) {
+                _self.overlapIndex = index;
+                overlapButtonObject.setLabel(list.items[index] + " ▼");
+                overlapButtonObject.hideMount();
+                // 切换内容
+                groups[oldIndex].style.display = "none";
+                groups[index].style.display = "block";
+                _self.onchangeHandler(index);
+            });
+            overlapContainer.appendChild(overlapButtonObject.getNode());
+            kity.Utils.each(groups, function(group, index) {
+                if (index > 0) {
+                    group.style.display = "none";
+                }
+                overlapContainer.appendChild(group);
+            });
+            overlapListObject.select(0);
+            return [ overlapContainer ];
+        },
+        // 获取group的list列表, 该类表满足box的group参数格式
+        getGroupList: function() {
+            var lists = [];
+            kity.Utils.each(this.options.group, function(group, index) {
+                lists.push(group.title);
+            });
+            return {
+                width: 150,
+                items: lists
+            };
+        },
+        createGroup: function() {
+            var doc = this.doc, groups = [], groupNode = null, groupTitle = null, itemType = BOX_TYPE.DETACHED === this.options.type ? ITEM_TYPE.BIG : ITEM_TYPE.SMALL, itemContainer = null;
             groupNode = $$.ele(this.doc, "div", {
                 className: PREFIX + "box-group"
             });
@@ -1890,7 +2188,7 @@ define("ui/ui-impl/box", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], function(r
                 });
                 groupNode.appendChild(groupTitle);
                 groupNode.appendChild(itemContainer);
-                kity.Utils.each(createItems(doc, group.content), function(item) {
+                kity.Utils.each(createItems(doc, group.content, itemType), function(item) {
                     item.appendTo(itemContainer);
                 });
                 groups.push(groupNode);
@@ -1911,7 +2209,8 @@ define("ui/ui-impl/box", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], function(r
             container.appendChild(this.element);
         }
     }), BoxItem = kity.createClass("BoxItem", {
-        constructor: function(doc, options) {
+        constructor: function(type, doc, options) {
+            this.type = type;
             this.doc = doc;
             this.options = options;
             this.element = this.createItem();
@@ -1940,7 +2239,36 @@ define("ui/ui-impl/box", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], function(r
             });
             return labelNode;
         },
+        getContent: function() {},
         createContent: function() {
+            switch (this.type) {
+              case ITEM_TYPE.BIG:
+                return this.createBigContent();
+
+              case ITEM_TYPE.SMALL:
+                return this.createSmallContent();
+            }
+        },
+        createBigContent: function() {
+            var doc = this.doc, contentNode = $$.ele(doc, "div", {
+                className: PREFIX + "box-item-content"
+            }), cls = PREFIX + "box-item-val", tmpContent = this.options.item, tmpNode = null;
+            if (typeof tmpContent === "string") {
+                tmpContent = {
+                    show: tmpContent,
+                    val: tmpContent
+                };
+            }
+            tmpNode = $$.ele(doc, "div", {
+                className: cls
+            });
+            tmpNode.innerHTML = tmpContent.show;
+            // 附加属性到项的根节点上
+            this.element.setAttribute("data-value", tmpContent.val);
+            contentNode.appendChild(tmpNode);
+            return contentNode;
+        },
+        createSmallContent: function() {
             var doc = this.doc, contentNode = $$.ele(doc, "div", {
                 className: PREFIX + "box-item-content"
             }), cls = PREFIX + "box-item-val", tmpContent = this.options.item, tmpNode = null;
@@ -1969,12 +2297,28 @@ define("ui/ui-impl/box", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], function(r
             container.appendChild(this.element);
         }
     });
-    function createItems(doc, group) {
+    function createItems(doc, group, type) {
         var items = [];
         kity.Utils.each(group, function(itemVal, i) {
-            items.push(new BoxItem(doc, itemVal));
+            items.push(new BoxItem(type, doc, itemVal));
         });
         return items;
+    }
+    // 为重叠式box创建容器
+    function createOverlapContainer(doc) {
+        return $$.ele(doc, "div", {
+            className: PREFIX + "overlap-container"
+        });
+    }
+    function createOverlapButton(doc) {
+        return new Button(doc, {
+            sign: false,
+            className: "overlap-button",
+            label: ""
+        });
+    }
+    function createOverlapList(doc, list) {
+        return new List(doc, list);
     }
     return Box;
 });
@@ -2016,6 +2360,9 @@ define("ui/ui-impl/button", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], functio
             var state = this.mountPoint.style.display || "none";
             this.mountPoint.style.display = state === "none" ? "block" : "none";
         },
+        setLabel: function(labelText) {
+            this.label.innerHTML = labelText;
+        },
         toggleSelect: function() {
             this.element.classList.toggle(PREFIX + "button-in");
         },
@@ -2049,9 +2396,16 @@ define("ui/ui-impl/button", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], functio
             var buttonNode = $$.ele(this.doc, "div", {
                 className: PREFIX + "button"
             });
+            // 附加className
+            if (this.options.className) {
+                buttonNode.className += " " + PREFIX + this.options.className;
+            }
             return buttonNode;
         },
         createIcon: function() {
+            if (!this.options.icon) {
+                return null;
+            }
             var iconNode = $$.ele(this.doc, "div", {
                 className: PREFIX + "button-icon"
             });
@@ -2066,6 +2420,9 @@ define("ui/ui-impl/button", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], functio
             return labelNode;
         },
         createSign: function() {
+            if (!this.options.sign) {
+                return null;
+            }
             return $$.ele(this.doc, "div", {
                 className: PREFIX + "button-sign"
             });
@@ -2076,13 +2433,24 @@ define("ui/ui-impl/button", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], functio
             });
         },
         mergeElement: function() {
-            this.element.appendChild(this.icon);
+            this.icon && this.element.appendChild(this.icon);
             this.element.appendChild(this.label);
-            this.element.appendChild(this.sign);
+            this.sign && this.element.appendChild(this.sign);
             this.element.appendChild(this.mountPoint);
         }
     });
     return Button;
+});
+/*!
+ * box类型定义
+ */
+define("ui/ui-impl/def/box-type", [], function(require) {
+    return {
+        // 分离式
+        DETACHED: 1,
+        // 重叠式
+        OVERLAP: 2
+    };
 });
 /*!
  * toolbar元素类型定义
@@ -2090,7 +2458,17 @@ define("ui/ui-impl/button", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], functio
 define("ui/ui-impl/def/ele-type", [], function(require) {
     return {
         DRAPDOWN_BOX: 1,
-        DELIMITER: 2
+        AREA: 2,
+        DELIMITER: 3
+    };
+});
+/*!
+ * 组元素类型定义
+ */
+define("ui/ui-impl/def/item-type", [], function(require) {
+    return {
+        BIG: 1,
+        SMALL: 2
     };
 });
 /*!
@@ -2122,7 +2500,7 @@ define("ui/ui-impl/delimiter", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], func
 /**
  * Created by hn on 14-3-31.
  */
-define("ui/ui-impl/drapdown-box", [ "kity", "ui/ui-impl/ui-utils", "jquery", "ui/ui-impl/button", "ui/ui-impl/box" ], function(require) {
+define("ui/ui-impl/drapdown-box", [ "kity", "ui/ui-impl/ui-utils", "jquery", "ui/ui-impl/button", "ui/ui-impl/box", "ui/ui-impl/def/box-type", "ui/ui-impl/def/item-type", "ui/ui-impl/list" ], function(require) {
     var kity = require("kity"), PREFIX = "kf-editor-ui-", // UiUitls
     $$ = require("ui/ui-impl/ui-utils"), Button = require("ui/ui-impl/button"), Box = require("ui/ui-impl/box"), DrapdownBox = kity.createClass("DrapdownBox", {
         constructor: function(doc, options) {
@@ -2173,13 +2551,108 @@ define("ui/ui-impl/drapdown-box", [ "kity", "ui/ui-impl/ui-utils", "jquery", "ui
     return DrapdownBox;
 });
 /**
+ * Created by hn on 14-3-31.
+ */
+define("ui/ui-impl/list", [ "kity", "ui/ui-impl/ui-utils", "jquery" ], function(require) {
+    var kity = require("kity"), PREFIX = "kf-editor-ui-", // UiUitls
+    $$ = require("ui/ui-impl/ui-utils"), List = kity.createClass("List", {
+        constructor: function(doc, options) {
+            this.options = options;
+            this.doc = doc;
+            this.onselectHandler = null;
+            this.currentSelect = -1;
+            this.element = this.createBox();
+            this.itemGroups = this.createItems();
+            this.mergeElement();
+        },
+        onselectHandler: function(index, oldIndex) {},
+        setSelectHandler: function(selectHandler) {
+            this.onselectHandler = selectHandler;
+        },
+        createBox: function() {
+            var boxNode = $$.ele(this.doc, "div", {
+                className: PREFIX + "list"
+            }), // 创建背景
+            bgNode = $$.ele(this.doc, "div", {
+                className: PREFIX + "list-bg"
+            });
+            if ("width" in this.options) {
+                boxNode.style.width = this.options.width + "px";
+            }
+            boxNode.appendChild(bgNode);
+            return boxNode;
+        },
+        select: function(index) {
+            var oldSelect = this.currentSelect;
+            if (oldSelect === -1) {
+                oldSelect = index;
+            }
+            this.unselect(oldSelect);
+            this.currentSelect = index;
+            this.itemGroups.items[index].firstChild.style.visibility = "visible";
+            this.onselectHandler(index, oldSelect);
+        },
+        unselect: function(index) {
+            this.itemGroups.items[index].firstChild.style.visibility = "hidden";
+        },
+        initEvent: function() {
+            var className = "." + PREFIX + "list-item", _self = this;
+            $$.delegate(this.itemGroups.container, className, "mousedown", function(e) {
+                e.preventDefault();
+                if (e.which !== 1) {
+                    return;
+                }
+                _self.select(this.getAttribute("data-index"));
+            });
+            $$.on(this.element, "mousedown", function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        },
+        createItems: function() {
+            var doc = this.doc, groupNode = null, itemNode = null, iconNode = null, items = [], itemContainer = null;
+            groupNode = $$.ele(this.doc, "div", {
+                className: PREFIX + "list-item"
+            });
+            itemContainer = groupNode.cloneNode(false);
+            itemContainer.className = PREFIX + "list-item-container";
+            kity.Utils.each(this.options.items, function(itemText, i) {
+                itemNode = groupNode.cloneNode(false);
+                iconNode = groupNode.cloneNode(false);
+                iconNode.className = PREFIX + "list-item-icon";
+                iconNode.innerHTML = '<img src="assets/images/toolbar/button/tick.png">';
+                itemNode.appendChild(iconNode);
+                itemNode.appendChild($$.ele(doc, "text", itemText));
+                itemNode.setAttribute("data-index", i);
+                items.push(itemNode);
+                itemContainer.appendChild(itemNode);
+            });
+            return {
+                container: itemContainer,
+                items: items
+            };
+        },
+        mergeElement: function() {
+            this.element.appendChild(this.itemGroups.container);
+        },
+        mountTo: function(container) {
+            container.appendChild(this.element);
+        }
+    });
+    return List;
+});
+/**
  * Created by hn on 14-4-1.
  */
 define("ui/ui-impl/ui-utils", [ "jquery", "kity" ], function(require) {
     var $ = require("jquery"), kity = require("kity"), TOPIC_POOL = {};
     return {
         ele: function(doc, name, options) {
-            var node = doc.createElement(name);
+            var node = null;
+            if (name === "text") {
+                return doc.createTextNode(options);
+            }
+            node = doc.createElement(name);
             options.className && (node.className = options.className);
             if (options.content) {
                 node.innerHTML = options.content;
@@ -2215,16 +2688,17 @@ define("ui/ui-impl/ui-utils", [ "jquery", "kity" ], function(require) {
 /**
  * Created by hn on 14-3-31.
  */
-define("ui/ui-impl/ui", [ "ui/ui-impl/drapdown-box", "kity", "ui/ui-impl/ui-utils", "ui/ui-impl/button", "ui/ui-impl/box", "ui/ui-impl/delimiter" ], function(require) {
+define("ui/ui-impl/ui", [ "ui/ui-impl/drapdown-box", "kity", "ui/ui-impl/ui-utils", "ui/ui-impl/button", "ui/ui-impl/box", "ui/ui-impl/delimiter", "ui/ui-impl/area" ], function(require) {
     return {
         DrapdownBox: require("ui/ui-impl/drapdown-box"),
-        Delimiter: require("ui/ui-impl/delimiter")
+        Delimiter: require("ui/ui-impl/delimiter"),
+        Area: require("ui/ui-impl/area")
     };
 });
 /**
  * Created by hn on 14-3-17.
  */
-define("ui/ui", [ "kity", "base/utils", "base/common", "base/event/event", "ui/toolbar/toolbar", "ui/ui-impl/ui", "ui/ui-impl/ui-utils", "ui/ui-impl/def/ele-type", "ui/control/zoom", "ui/toolbar-ele-list" ], function(require, exports, modules) {
+define("ui/ui", [ "kity", "base/utils", "base/common", "base/event/event", "ui/toolbar/toolbar", "ui/ui-impl/ui", "ui/ui-impl/ui-utils", "ui/ui-impl/def/ele-type", "ui/control/zoom", "ui/toolbar-ele-list", "ui/ui-impl/def/box-type" ], function(require, exports, modules) {
     var kity = require("kity"), Utils = require("base/utils"), Toolbar = require("ui/toolbar/toolbar"), // 控制组件
     ScrollZoom = require("ui/control/zoom"), ELEMENT_LIST = require("ui/toolbar-ele-list"), UIComponent = kity.createClass("UIComponent", {
         constructor: function(kfEditor) {

@@ -29,6 +29,9 @@
             "url": "https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt"
         }
     ],
+    "scripts": {
+        "dev": "npx http-server -o ./index.html"
+    },
     "dependencies": {},
     "devDependencies": {
         "grunt": "~0.4.1",
